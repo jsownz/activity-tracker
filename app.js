@@ -32,6 +32,11 @@ app.get('/',function(req, res){
 //      });
 //    }
 //  });
+    res.render('welcome', {
+      title: "Welcome",
+      icon: "user",
+      javascripts:['welcome.js']
+    });
 });
 app.get('/about',function(req, res){
   res.render('about', {title:"About"});
