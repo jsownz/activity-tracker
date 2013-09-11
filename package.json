@@ -6,6 +6,8 @@
     "express": "3.x",
     "redis": "*",
     "hbs":"*",
-    "fitbit":"*"
+    "fitbit":"*",
+    "node-uuid":"*",
+    "mysql":"2.0.0-alpha9"
   }
 }

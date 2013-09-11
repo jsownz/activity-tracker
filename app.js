@@ -1,10 +1,33 @@
 var express = require('express'),
     fs      = require('fs'),
     config  = require('./config'),
-    Fitbit = require('fitbit');
+    Fitbit  = require('fitbit'),
+    crypto  = require('crypto'),
+    uuid    = require('node-uuid'),
+    mysql   = require('mysql'),
     app     = express();
 
 var hbs     = require('hbs');
+
+var connection = mysql.createConnection({
+  host     : 'localhost',
+  user     : config.mysql_login,
+  password : config.mysql_pass,
+});
+
+/** HOW TO USE MYSQL
+
+connection.connect();
+
+connection.query('SELECT 1 + 1 AS solution', function(err, rows, fields) {
+  if (err) throw err;
+
+  console.log('The solution is: ', rows[0].solution);
+});
+
+connection.end();
+
+**/
 
 app.set('view engine', 'html');
 app.engine('html', hbs.__express);
@@ -12,15 +35,28 @@ app.engine('html', hbs.__express);
 app.use(express.bodyParser());
 app.use(express.static('assets'));
 app.use(express.cookieParser());
-app.use(express.session({secret: 'f1tb1t4pp'}));
+app.use(express.session({secret: config.SESSION_SECRET}));
 
 
 app.get('/',function(req, res){
-    res.render('welcome', {
-      title: "Welcome",
-      icon: "user",
-      javascripts:['welcome.js']
-    });
+  var key = uuid.v4(),
+      password = "password!"
+      hash = crypto.createHmac('sha256', key).update(password).digest('hex');
+  console.log(key);
+  console.log(hash);
+  //setting a session variable
+  /*
+    req.session.whatever = "blah";
+    Probably set a username and then check to see if it's there.
+    Username and probably token will be on local storage to log in.
+    same for tokens with fitbit, twitter, whatever else
+    req.session.destroy(); // destroys the session
+  */
+  res.render('welcome', {
+    title: "Welcome",
+    icon: "user",
+    javascripts:['welcome.js']
+  });
 });
 
 app.get('/about',function(req, res){
